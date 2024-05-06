@@ -1,0 +1,61 @@
+import { Container, Text, VStack, Input, Button, ListItem, List, Checkbox, useToast } from "@chakra-ui/react";
+import { useState } from "react";
+
+const Index = () => {
+  const [todos, setTodos] = useState([]);
+  const [newTodo, setNewTodo] = useState("");
+  const toast = useToast();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (newTodo.trim() !== "") {
+      setTodos([...todos, { text: newTodo, completed: false }]);
+      setNewTodo("");
+    } else {
+      toast({
+        title: "Error",
+        description: "Please enter a valid todo item",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
+
+  const handleToggleCompleted = (index) => {
+    const newTodos = [...todos];
+    newTodos[index].completed = !newTodos[index].completed;
+    setTodos(newTodos);
+  };
+
+  const handleDelete = (index) => {
+    setTodos(todos.filter((todo, i) => i !== index));
+  };
+
+  return (
+    <Container centerContent maxW="container.md" height="100vh" display="flex" flexDirection="column" justifyContent="center" alignItems="center">
+      <VStack spacing={4}>
+        <Text fontSize="2xl">Todo App</Text>
+        <form onSubmit={handleSubmit}>
+          <Input type="text" value={newTodo} onChange={(e) => setNewTodo(e.target.value)} placeholder="Enter a new todo item" />
+          <Button type="submit" colorScheme="teal" size="md">
+            Add Todo
+          </Button>
+        </form>
+        <List>
+          {todos.map((todo, index) => (
+            <ListItem key={index}>
+              <Checkbox isChecked={todo.completed} onChange={() => handleToggleCompleted(index)} />
+              <Text textDecoration={todo.completed ? "line-through" : "none"}>{todo.text}</Text>
+              <Button colorScheme="red" size="sm" onClick={() => handleDelete(index)}>
+                Delete
+              </Button>
+            </ListItem>
+          ))}
+        </List>
+      </VStack>
+    </Container>
+  );
+};
+
+export default Index;
